@@ -1,29 +1,31 @@
 package nai.bayes;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class Data {
-	private final List<Double[]> x = new ArrayList<>();
-	private final List<Integer> d = new ArrayList<>();
+public class Data implements Iterable<Double> {
+	private final List<Double> attrs = new ArrayList<>();
+	private boolean label;
 	
 	public int size() {
-		return x.size();
+		return attrs.size();
 	}
 	
-	public Double[] xAt(int index) {
-		return x.get(index);
+	public void addAttr(double attr) {
+		attrs.add(attr);
 	}
 	
-	public int dAt(int index) {
-		return d.get(index);
+	public void setLabel(boolean label) {
+		this.label = label;
+	}
+
+	public boolean is(boolean label) {
+		return this.label == label;
 	}
 	
-	public void addX(Double[] x) {
-		this.x.add(x);
-	}
-	
-	public void addD(Integer d) {
-		this.d.add(d);
+	@Override
+	public Iterator<Double> iterator() {
+		return attrs.iterator();
 	}
 }

@@ -1,14 +1,16 @@
 package nai.bayes;
 
+import java.util.List;
+
 public class DataSet {
-	public static final int SPAM = 1;
-	public static final int HAM = 0;
+	public static final boolean SPAM = true;
+	public static final boolean HAM = false;
 	
-	public Data getTrainSet() {
+	public List<Data> getTrainSet() {
 		return null;
 	}
 	
-	public Data getTestSet() {
+	public List<Data> getTestSet() {
 		return null;
 	}
 }
