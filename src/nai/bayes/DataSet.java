@@ -2,7 +2,7 @@ package nai.bayes;
 
 import java.util.List;
 
-public class DataSet {
+public class DataSet implements IDataSet {
 	public static final boolean SPAM = true;
 	public static final boolean HAM = false;
 	

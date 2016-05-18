@@ -4,7 +4,7 @@ import java.util.List;
 
 public class BayesClassifier {
 	
-	private DataSet ds;
+	private IDataSet ds;
 	private Probabilities prob;
 	
 	private double pX = 1;
@@ -14,7 +14,7 @@ public class BayesClassifier {
 		prob = new Probabilities(ds.getTrainSet());
 	}
 	
-	public BayesClassifier(DataSet dataSet, String probsFile) {
+	public BayesClassifier(IDataSet dataSet, String probsFile) {
 		prob = Probabilities.deserialize(probsFile);
 		ds = dataSet;
 	}
