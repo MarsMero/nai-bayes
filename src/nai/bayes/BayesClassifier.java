@@ -14,6 +14,11 @@ public class BayesClassifier {
 		prob = new Probabilities(ds.getTrainSet());
 	}
 	
+	public BayesClassifier(IDataSet dataSet) {
+		ds = dataSet;
+		prob = new Probabilities(ds.getTrainSet());
+	}
+	
 	public BayesClassifier(IDataSet dataSet, String probsFile) {
 		prob = Probabilities.deserialize(probsFile);
 		ds = dataSet;

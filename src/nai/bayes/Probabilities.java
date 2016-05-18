@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -24,7 +23,7 @@ public class Probabilities implements Serializable {
 	private int hamCount;
 	
 	public Probabilities(List<Data> set) {
-		init(set.size());
+		init(set.get(0).size());
 		setSpamHamCount(set);
 		calculatePosibilities(set);
 	}
