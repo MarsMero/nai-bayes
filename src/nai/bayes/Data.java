@@ -28,4 +28,12 @@ public class Data implements Iterable<Double> {
 	public Iterator<Double> iterator() {
 		return attrs.iterator();
 	}
+	
+	public List<Double> getAttrs() {
+		return attrs;
+	}
+	
+	public boolean label() {
+		return label;
+	}
 }
