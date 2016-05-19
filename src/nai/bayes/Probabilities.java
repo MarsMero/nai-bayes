@@ -13,46 +13,70 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-public class Probabilities implements Serializable {
+public class Probabilities<L> implements Serializable {
 	private static final long serialVersionUID = 7584990748084327783L;
 	
-	private final List<Map<Double, ClassValue>> spam = new ArrayList<>();
-	private final List<Map<Double, ClassValue>> ham = new ArrayList<>();	
-	
-	private int spamCount;
-	private int hamCount;
-	
 	private List<Integer> variety;
+	private Map<L, Decision<L>> decisions;
+	private int dataSetSize;
 	
-	public Probabilities(IDataSet set) {
-		init(set.nAttrs());
+	public Probabilities(IDataSet<L> set) {
+		dataSetSize = set.size();
+		decisions = getDecisions(set);
 		variety = getVariety(set);
-		setSpamHamCount(set.getSet());
-		calculatePosibilities(set.getSet());
+		countValues(set);
+		calcProbabilities();
 	}
 	
-	public int getSpamCount() {
-		return spamCount;
+	public Map<L, Double> getProbs(int attrIndex, L value) {
+		Map<L, Double> map = new HashMap<>();
+		
+		for(Entry<L, Decision<L>> set : decisions.entrySet()) 
+			map.put(set.getKey(), getProb(attrIndex, value, set.getValue()));
+		
+		
+		return map;
 	}
 	
-	public int getHamCount() {
-		return hamCount;
+	public double getProb(int attrIndex, L value, Decision<L> dec) {
+		Map<L, Value> map = dec.getList().get(attrIndex);
+		
+		if(map.containsKey(value)) 
+			return map.get(value).getProbability();
+		else
+			return 1.0/(double)dec.getCount() + variety.get(attrIndex);
 	}
 	
-	public double spamProbability(int attr,double value) {
-		return attrProbability(attr, value, spam, spamCount);
+	public double getDecisionProbab(L label) {
+		return decisions.get(label).getCount()/(double)dataSetSize;
 	}
 	
-	public double hamProbability(int attr, double value) {
-		return attrProbability(attr, value, ham, hamCount);
+	public Map<L, Decision<L>> getDescisions() {
+		return decisions;
 	}
 	
-	private List<Integer> getVariety(IDataSet dataSet) {
+	private Map<L, Decision<L>> getDecisions(IDataSet<L> dataSet) {
+		Map<L, Decision<L>> map = new HashMap<>();
+		Set<L> set = new HashSet<>();
+		
+		for(Data<L> d : dataSet.getSet()) {
+			if(!set.contains(d.label())) {
+				set.add(d.label());
+				map.put(d.label(), new Decision<L>(dataSet.nAttrs(), d.label()));
+			}
+			map.get(d.label()).incrCount();
+		}
+		
+		return map;
+	}
+	
+	private List<Integer> getVariety(IDataSet<L> dataSet) {
 		List<Integer> var = new ArrayList<>();
 		
-		Set<Double> set = new HashSet<>();
+		Set<L> set = new HashSet<>();
 		
 		for(int i = 0; i < dataSet.nAttrs(); i++) {
 			set.clear();
@@ -65,76 +89,52 @@ public class Probabilities implements Serializable {
 		return var;
 	}
 	
-	private double attrProbability(int attrIndex, double value, List<Map<Double, ClassValue>> map, int count) {
-		ClassValue cv;
+	private void countValues(IDataSet<L> dataSet) {
+		for(Data<L> data : dataSet.getSet()) 
+			for(Entry<L, Decision<L>> set : decisions.entrySet()) 
+				if(data.label().equals(set.getKey())) 
+					addUpValues(data, set.getValue());
+	}
+	
+	private void addUpValues(Data<L> data, Decision<L> dec) {
+		Iterator<L> idata = data.getAttrs().iterator();
+		Iterator<Map<L, Value>> idec = dec.getList().iterator();
+		L attr;
+		Map<L, Value> map;
 		
-		if((cv = map.get(attrIndex).get(value)) != null) 
-			return cv.getProbability();
-		else {
-			return 1.0/(double)(count + variety.get(attrIndex));
-		}
-	}
-	
-	private void init(int size) {
-		for(int i = 0; i < size; i++) {
-			spam.add(new HashMap<Double, ClassValue>());
-			ham.add(new HashMap<Double, ClassValue>());
-		}
-	}
-	
-	private void setSpamHamCount(List<Data> set) {
-		int spam = 0;
-		for(Data data : set) 
-			if(data.is(DataSet.SPAM))
-				spam++;
-		spamCount = spam;
-		hamCount = set.size() - spam;
-	}
-	
-	private void calculatePosibilities(List<Data> set) {
-		forEachDataCountValues(set);
-		forEachAttrCalculateProb();
-	}
-	
-	private void forEachDataCountValues(List<Data> set) {
-		for(Data data : set) {
-			if(data.is(DataSet.SPAM)) 
-				countValues(data, spam);
+		while(idata.hasNext()) {
+			attr = idata.next();
+			map = idec.next();
+			if(map.containsKey(attr))
+				map.get(attr).incrCount();
 			else
-				countValues(data, ham);
+				map.put(attr, new Value());
 		}
-	}
-	
-	private void countValues(Data data, List<Map<Double, ClassValue>> list) {
-		ClassValue bc;
-		Iterator<Map<Double, ClassValue>> il = list.iterator();
-		Map<Double, ClassValue> map;
 		
-		for(double d : data) {
-			map = il.next();
-			if((bc = map.get(d)) != null) 
-				bc.add();
-			else
-				map.put(d, new ClassValue());
+	}
+	
+	private void calcProbabilities() {
+		for(Decision<L> dec : decisions.values()) {
+			setProbabilities(dec);
 		}
 	}
 	
-	private void forEachAttrCalculateProb() {
-		setProb(spam, spamCount);
-		setProb(ham, hamCount);
-	}
-	
-	private void setProb(List<Map<Double, ClassValue>> list, int count) {
-		for(Map<Double, ClassValue> map : list) {
-			int i = 0;
-			for(ClassValue value : map.values()) {
-				value.setProbability((value.getCount() + 1.0)/(double)(count + variety.get(i)));
-				i++;
-			}
+	private void setProbabilities(Decision<L> dec) {
+		Iterator<Map<L, Value>> idec = dec.getList().iterator();
+		Iterator<Integer> ivar = variety.iterator();
+		Map<L, Value> map;
+		Integer var;
+		
+		while(idec.hasNext()) {
+			map = idec.next();
+			var = ivar.next();
+			for(Value val : map.values())
+				val.setProbability((val.getCount() + 1.0)/(double)dec.getCount() + var);
 		}
+		
 	}
 	
-	public static void serialize(Probabilities probs) {
+	public static void serialize(@SuppressWarnings("rawtypes") Probabilities probs) {
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("data/probs.data"))) {
 			out.writeObject(probs);
 		} catch(FileNotFoundException e) {
@@ -144,6 +144,7 @@ public class Probabilities implements Serializable {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static Probabilities deserialize(String probsFile) {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(probsFile))) {
 			return (Probabilities) in.readObject();

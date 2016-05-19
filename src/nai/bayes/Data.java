@@ -1,40 +1,33 @@
 package nai.bayes;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Data implements Iterable<Double> {
-	private final List<Double> attrs = new ArrayList<>();
-	private boolean label;
+public class Data<T> {
+	private final List<T> attrs = new ArrayList<>();
+	private T label;
 	
 	public int size() {
 		return attrs.size();
 	}
 	
-	public void addAttr(double attr) {
+	public void addAttr(T attr) {
 		attrs.add(attr);
 	}
 	
-	public void setLabel(boolean label) {
+	public void setLabel(T label) {
 		this.label = label;
 	}
 
-	public boolean is(boolean label) {
+	public boolean is(T label) {
 		return this.label == label;
 	}
 	
-	@Deprecated
-	@Override
-	public Iterator<Double> iterator() {
-		return attrs.iterator();
-	}
-	
-	public List<Double> getAttrs() {
+	public List<T> getAttrs() {
 		return attrs;
 	}
 	
-	public boolean label() {
+	public T label() {
 		return label;
 	}
 }

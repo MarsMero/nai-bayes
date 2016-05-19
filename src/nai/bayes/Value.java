@@ -1,6 +1,6 @@
 package nai.bayes;
 
-public class ClassValue {
+public class Value {
 	
 	private double probability;
 	private int count = 1;
@@ -17,7 +17,7 @@ public class ClassValue {
 		return count;
 	}
 
-	public void add() {
+	public void incrCount() {
 		count++;
 	}
 	

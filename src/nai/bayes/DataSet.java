@@ -2,7 +2,7 @@ package nai.bayes;
 
 import java.util.List;
 
-public class DataSet implements IDataSet {
+public class DataSet<T> implements IDataSet<T> {
 	public static final boolean SPAM = true;
 	public static final boolean HAM = false;
 	
@@ -15,7 +15,7 @@ public class DataSet implements IDataSet {
 	}
 	
 	@Override
-	public List<Data> getSet() {
+	public List<Data<T>> getSet() {
 		// TODO Auto-generated method stub
 		return null;
 	}

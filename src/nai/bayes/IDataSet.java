@@ -2,8 +2,8 @@ package nai.bayes;
 
 import java.util.List;
 
-public interface IDataSet {
-	List<Data> getSet();
+public interface IDataSet<T> {
+	List<Data<T>> getSet();
 	int nAttrs();
 	int size();
 }
