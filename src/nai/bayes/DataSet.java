@@ -10,15 +10,25 @@ public class DataSet implements IDataSet {
 		
 	}
 	
-	public DataSet(String trainSet, String testSet) {
+	public DataSet(String dataSetFile) {
 		
 	}
 	
-	public List<Data> getTrainSet() {
+	@Override
+	public List<Data> getSet() {
+		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public List<Data> getTestSet() {
-		return null;
+
+	@Override
+	public int nAttrs() {
+		// TODO Liczba atrybutow bez okladki
+		return 0;
+	}
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

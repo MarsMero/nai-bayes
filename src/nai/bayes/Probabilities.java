@@ -9,9 +9,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Probabilities implements Serializable {
 	private static final long serialVersionUID = 7584990748084327783L;
@@ -22,10 +24,13 @@ public class Probabilities implements Serializable {
 	private int spamCount;
 	private int hamCount;
 	
-	public Probabilities(List<Data> set) {
-		init(set.get(0).size());
-		setSpamHamCount(set);
-		calculatePosibilities(set);
+	private List<Integer> variety;
+	
+	public Probabilities(IDataSet set) {
+		init(set.nAttrs());
+		variety = getVariety(set);
+		setSpamHamCount(set.getSet());
+		calculatePosibilities(set.getSet());
 	}
 	
 	public int getSpamCount() {
@@ -44,13 +49,29 @@ public class Probabilities implements Serializable {
 		return attrProbability(attr, value, ham, hamCount);
 	}
 	
-	private double attrProbability(int attr, double value, List<Map<Double, ClassValue>> map, int count) {
+	private List<Integer> getVariety(IDataSet dataSet) {
+		List<Integer> var = new ArrayList<>();
+		
+		Set<Double> set = new HashSet<>();
+		
+		for(int i = 0; i < dataSet.nAttrs(); i++) {
+			set.clear();
+			
+			for(int j = 0; j < dataSet.size(); j++) 
+				set.add(dataSet.getSet().get(j).getAttrs().get(i));
+			var.add(set.size());
+		}
+		
+		return var;
+	}
+	
+	private double attrProbability(int attrIndex, double value, List<Map<Double, ClassValue>> map, int count) {
 		ClassValue cv;
 		
-		if((cv = map.get(attr).get(value)) != null) 
+		if((cv = map.get(attrIndex).get(value)) != null) 
 			return cv.getProbability();
 		else {
-			return 1.0/(double)(count + map.get(attr).size());
+			return 1.0/(double)(count + variety.get(attrIndex));
 		}
 	}
 	
@@ -105,8 +126,10 @@ public class Probabilities implements Serializable {
 	
 	private void setProb(List<Map<Double, ClassValue>> list, int count) {
 		for(Map<Double, ClassValue> map : list) {
+			int i = 0;
 			for(ClassValue value : map.values()) {
-				value.setProbability((value.getCount() + 1.0)/(double)(count + map.size()));
+				value.setProbability((value.getCount() + 1.0)/(double)(count + variety.get(i)));
+				i++;
 			}
 		}
 	}

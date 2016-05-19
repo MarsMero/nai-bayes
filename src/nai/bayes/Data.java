@@ -24,6 +24,7 @@ public class Data implements Iterable<Double> {
 		return this.label == label;
 	}
 	
+	@Deprecated
 	@Override
 	public Iterator<Double> iterator() {
 		return attrs.iterator();
