@@ -33,7 +33,7 @@ public class BayesClassifier<T> {
 	public void test() {
 		int correct = 0;
 		for(Data<T> data : testSet.getSet()) 
-			if(data.label().equals(probLabel(data.getAttrs())))
+			if(data.label().equals(classify(data.getAttrs())))
 				correct++;
 		
 		
@@ -41,7 +41,7 @@ public class BayesClassifier<T> {
 		System.out.println("percent: " + (correct/(double)testSet.size()*100) + "%");
 	}
 	
-	public T probLabel(List<T> attrs) {
+	public T classify(List<T> attrs) {
 		Map<T, Double> map = new HashMap<>();
 		
 		for(T lable : prob.getDescisions().keySet())
@@ -61,7 +61,17 @@ public class BayesClassifier<T> {
 	}
 	
 	private T getMaxProbLabel(Map<T, Double> map) {
-		return null;
+		double maxVal = 0;
+		T maxLab = null;
+		
+		for(Entry<T, Double> set : map.entrySet()) {
+			if(set.getValue() > maxVal) {
+				maxVal = set.getValue();
+				maxLab = set.getKey();
+			}
+		}
+		
+		return maxLab;
 	}
 	
 	

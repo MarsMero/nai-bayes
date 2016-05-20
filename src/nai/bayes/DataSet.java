@@ -3,8 +3,6 @@ package nai.bayes;
 import java.util.List;
 
 public class DataSet<T> implements IDataSet<T> {
-	public static final boolean SPAM = true;
-	public static final boolean HAM = false;
 	
 	public DataSet() {
 		

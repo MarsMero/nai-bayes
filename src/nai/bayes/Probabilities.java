@@ -41,21 +41,21 @@ public class Probabilities<L> implements Serializable {
 		return map;
 	}
 	
-	public double getProb(int attrIndex, L value, Decision<L> dec) {
-		Map<L, Value> map = dec.getList().get(attrIndex);
-		
-		if(map.containsKey(value)) 
-			return map.get(value).getProbability();
-		else
-			return 1.0/(double)dec.getCount() + variety.get(attrIndex);
-	}
-	
 	public double getDecisionProbab(L label) {
 		return decisions.get(label).getCount()/(double)dataSetSize;
 	}
 	
 	public Map<L, Decision<L>> getDescisions() {
 		return decisions;
+	}
+	
+	private double getProb(int attrIndex, L value, Decision<L> dec) {
+		Map<L, Value> map = dec.getList().get(attrIndex);
+		
+		if(map.containsKey(value)) 
+			return map.get(value).getProbability();
+		else
+			return 1.0/(double)dec.getCount() + variety.get(attrIndex);
 	}
 	
 	private Map<L, Decision<L>> getDecisions(IDataSet<L> dataSet) {
