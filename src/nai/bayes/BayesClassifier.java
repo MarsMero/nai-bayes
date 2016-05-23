@@ -11,20 +11,24 @@ public class BayesClassifier<T> {
 	private IDataSet<T> testSet;
 	private Probabilities<T> prob;
 	
-	public BayesClassifier() {
-		trainSet = new DataSet<>();
-		testSet = new DataSet<>();
-		prob = new Probabilities<>(trainSet);
-	}
-	
 	public BayesClassifier(IDataSet<T> trainSet, IDataSet<T> testSet) {
+		if(trainSet == null || testSet == null)
+			throw new NullPointerException();
+		if(testSet.nAttrs() != trainSet.nAttrs())
+			throw new IllegalArgumentException("Test DataSet's number of arguments " +
+					"is different from Train DataSet.");
 		this.trainSet = trainSet;
 		this.testSet = testSet;
-		prob = new Probabilities<T>(trainSet);
+		prob = new Probabilities<>(this.trainSet);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public BayesClassifier(IDataSet<T> trainSet,IDataSet<T> testSet, String probsFile) {
+		if(trainSet == null || testSet == null)
+			throw new NullPointerException();
+		if(testSet.nAttrs() != trainSet.nAttrs())
+			throw new IllegalArgumentException("Test DataSet's number of arguments " +
+					"is different from Train DataSet.");
 		prob = Probabilities.deserialize(probsFile);
 		this.trainSet = trainSet;
 		this.testSet = testSet;
