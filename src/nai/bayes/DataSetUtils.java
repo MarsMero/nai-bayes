@@ -51,9 +51,9 @@ public class DataSetUtils {
         RemoveUseless removeUseless = new RemoveUseless();
         removeUseless.setInputFormat(data);
         data = Filter.useFilter(data, removeUseless);
-        /*Discretize discretize = new Discretize();
+        Discretize discretize = new Discretize();
         discretize.setInputFormat(data);
-        data = Filter.useFilter(data, discretize);*/
+        data = Filter.useFilter(data, discretize);
         File file = new File(outputSetFile);
         Files.deleteIfExists(file.toPath());
         CSVSaver csvSaver = new CSVSaver();

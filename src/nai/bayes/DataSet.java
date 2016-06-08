@@ -27,6 +27,7 @@ public class DataSet implements IDataSet<String> {
 				for (int i = 0; i < array.length-1; i++) {
 					data.addAttr(array[i]);
 				}
+				list.add(data);
 			}
 		}
 		dataSetReader.close();
