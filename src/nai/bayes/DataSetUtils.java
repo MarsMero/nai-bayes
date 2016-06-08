@@ -52,6 +52,8 @@ public class DataSetUtils {
         removeUseless.setInputFormat(data);
         data = Filter.useFilter(data, removeUseless);
         Discretize discretize = new Discretize();
+        discretize.setUseEqualFrequency(true);
+        discretize.setBins(2);
         discretize.setInputFormat(data);
         data = Filter.useFilter(data, discretize);
         File file = new File(outputSetFile);
