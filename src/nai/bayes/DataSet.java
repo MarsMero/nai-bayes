@@ -10,6 +10,7 @@ public class DataSet implements IDataSet<String> {
 
 	private int attrs;
 	private final List<Data<String>> list = new ArrayList<>();
+	private final List<Data<String>> readonlyref = Collections.unmodifiableList(list);
 	
 	public DataSet() throws IOException {
 		this(Conf.DATA_FILE);
@@ -39,7 +40,7 @@ public class DataSet implements IDataSet<String> {
 	
 	@Override
 	public List<Data<String>> getSet() {
-		return Collections.unmodifiableList(list);
+		return readonlyref;
 	}
 
 	@Override

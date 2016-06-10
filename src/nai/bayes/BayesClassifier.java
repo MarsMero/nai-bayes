@@ -22,7 +22,6 @@ public class BayesClassifier<T> {
 		prob = new Probabilities<>(this.trainSet);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public BayesClassifier(IDataSet<T> trainSet,IDataSet<T> testSet, String probsFile) {
 		if(trainSet == null || testSet == null)
 			throw new NullPointerException();
@@ -53,12 +52,19 @@ public class BayesClassifier<T> {
 		
 		Map<T, Double> result;
 		for(int i = 0; i < attrs.size(); i++) {
-			result = prob.getProbs(i, attrs.get(i));
+			result = prob.getProbabilities(i, attrs.get(i));
 			for(Entry<T, Double> set : result.entrySet()) {
 				double val = map.get(set.getKey()).doubleValue();
 				val *= set.getValue();
 				map.put(set.getKey(), val);
 			}
+		}
+
+		for(Entry<T, Double> set : map.entrySet()) {
+			double x = set.getValue();
+			double y = prob.getDecisionProbability(set.getKey());
+			double val = set.getValue()*prob.getDecisionProbability(set.getKey());
+			map.put(set.getKey(), val);
 		}
 		
 		return getMaxProbLabel(map);

@@ -19,10 +19,6 @@ public class Data<T> {
 		this.label = label;
 	}
 
-	public boolean is(T label) {
-		return this.label == label;
-	}
-	
 	public List<T> getAttrs() {
 		return attrs;
 	}

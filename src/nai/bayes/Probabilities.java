@@ -31,7 +31,7 @@ public class Probabilities<L> implements Serializable {
 		calcProbabilities();
 	}
 	
-	public Map<L, Double> getProbs(int attrIndex, L value) {
+	public Map<L, Double> getProbabilities(int attrIndex, L value) {
 		Map<L, Double> map = new HashMap<>();
 		
 		for(Entry<L, Decision<L>> set : decisions.entrySet()) 
@@ -41,7 +41,7 @@ public class Probabilities<L> implements Serializable {
 		return map;
 	}
 	
-	public double getDecisionProbab(L label) {
+	public double getDecisionProbability(L label) {
 		return decisions.get(label).getCount()/(double)dataSetSize;
 	}
 	
@@ -51,11 +51,11 @@ public class Probabilities<L> implements Serializable {
 	
 	private double getProb(int attrIndex, L value, Decision<L> dec) {
 		Map<L, Value> map = dec.getList().get(attrIndex);
-		
+
 		if(map.containsKey(value)) 
 			return map.get(value).getProbability();
 		else
-			return 1.0/(double)dec.getCount() + variety.get(attrIndex);
+			return calculateProbability(0, dec.getCount(), variety.get(attrIndex));
 	}
 	
 	private Map<L, Decision<L>> getDecisions(IDataSet<L> dataSet) {
@@ -129,12 +129,16 @@ public class Probabilities<L> implements Serializable {
 			map = idec.next();
 			var = ivar.next();
 			for(Value val : map.values())
-				val.setProbability((val.getCount() + 1.0)/(double)dec.getCount() + var);
+				val.setProbability(calculateProbability(val.getCount(), dec.getCount(), var));
 		}
 		
 	}
+
+	private double calculateProbability(double valCount, double nValues, double variety) {
+		return (valCount + 1.0)/(nValues + variety);
+	}
 	
-	public static void serialize(@SuppressWarnings("rawtypes") Probabilities probs) {
+	public static void serialize(Probabilities probs) {
 		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("data/probs.data"))) {
 			out.writeObject(probs);
 		} catch(FileNotFoundException e) {
@@ -144,7 +148,6 @@ public class Probabilities<L> implements Serializable {
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public static Probabilities deserialize(String probsFile) {
 		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(probsFile))) {
 			return (Probabilities) in.readObject();
