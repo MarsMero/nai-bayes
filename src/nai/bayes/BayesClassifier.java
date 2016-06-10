@@ -61,8 +61,6 @@ public class BayesClassifier<T> {
 		}
 
 		for(Entry<T, Double> set : map.entrySet()) {
-			double x = set.getValue();
-			double y = prob.getDecisionProbability(set.getKey());
 			double val = set.getValue()*prob.getDecisionProbability(set.getKey());
 			map.put(set.getKey(), val);
 		}
