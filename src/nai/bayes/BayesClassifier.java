@@ -1,5 +1,6 @@
 package nai.bayes;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,22 +13,16 @@ public class BayesClassifier<T> {
 	private Probabilities<T> prob;
 	
 	public BayesClassifier(IDataSet<T> trainSet, IDataSet<T> testSet) {
-		if(trainSet == null || testSet == null)
-			throw new NullPointerException();
-		if(testSet.nAttrs() != trainSet.nAttrs())
-			throw new IllegalArgumentException("Test DataSet's number of arguments " +
-					"is different from Train DataSet.");
+		verifyArgs(trainSet, testSet);
 		this.trainSet = trainSet;
 		this.testSet = testSet;
 		prob = new Probabilities<>(this.trainSet);
 	}
 	
 	public BayesClassifier(IDataSet<T> trainSet,IDataSet<T> testSet, String probsFile) {
-		if(trainSet == null || testSet == null)
-			throw new NullPointerException();
-		if(testSet.nAttrs() != trainSet.nAttrs())
-			throw new IllegalArgumentException("Test DataSet's number of arguments " +
-					"is different from Train DataSet.");
+		verifyArgs(trainSet, testSet);
+		if(!new File(probsFile).canRead())
+			throw new IllegalArgumentException(probsFile + " isn't valid file.");
 		prob = Probabilities.deserialize(probsFile);
 		this.trainSet = trainSet;
 		this.testSet = testSet;
@@ -82,5 +77,11 @@ public class BayesClassifier<T> {
 		return maxLab;
 	}
 	
-	
+	private void verifyArgs(IDataSet<T> trainSet,IDataSet<T> testSet) {
+		if(trainSet == null || testSet == null)
+			throw new NullPointerException();
+		if(testSet.nAttrs() != trainSet.nAttrs())
+			throw new IllegalArgumentException("Test DataSet's number of arguments " +
+					"is different from train DataSet's.");
+	}
 }

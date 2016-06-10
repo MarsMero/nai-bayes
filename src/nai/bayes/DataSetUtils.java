@@ -6,6 +6,8 @@ import weka.core.converters.CSVSaver;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Discretize;
+import weka.filters.unsupervised.attribute.PKIDiscretize;
+import weka.filters.unsupervised.attribute.PrincipalComponents;
 import weka.filters.unsupervised.attribute.RemoveUseless;
 
 import java.io.*;
@@ -48,14 +50,10 @@ public class DataSetUtils {
         DataSource source = new DataSource(csvLoader);
         Instances data = source.getDataSet();
         data.setClassIndex(data.numAttributes() - 1);
-        RemoveUseless removeUseless = new RemoveUseless();
-        removeUseless.setInputFormat(data);
-        data = Filter.useFilter(data, removeUseless);
-        Discretize discretize = new Discretize();
-        discretize.setUseEqualFrequency(true);
-        discretize.setBins(2);
-        discretize.setInputFormat(data);
-        data = Filter.useFilter(data, discretize);
+
+        data = pkiDiscretize(data);
+        data = removeUseless(data);
+
         File file = new File(outputSetFile);
         Files.deleteIfExists(file.toPath());
         CSVSaver csvSaver = new CSVSaver();
@@ -65,4 +63,24 @@ public class DataSetUtils {
         csvSaver.writeBatch();
     }
 
+    private static Instances removeUseless(Instances data) throws Exception {
+        RemoveUseless removeUseless = new RemoveUseless();
+        removeUseless.setInputFormat(data);
+        return Filter.useFilter(data, removeUseless);
+    }
+
+    private static Instances discretize(Instances data) throws Exception {
+        Discretize discretize = new Discretize();
+        discretize.setUseEqualFrequency(true);
+        discretize.setBins(2);
+        discretize.setInputFormat(data);
+        return Filter.useFilter(data, discretize);
+    }
+
+    private static Instances pkiDiscretize(Instances data) throws  Exception {
+        PKIDiscretize pkiDiscretize = new PKIDiscretize();
+        pkiDiscretize.setUseEqualFrequency(true);
+        pkiDiscretize.setInputFormat(data);
+        return Filter.useFilter(data, pkiDiscretize);
+    }
 }
