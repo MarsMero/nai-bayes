@@ -51,8 +51,8 @@ public class DataSetUtils {
         Instances data = source.getDataSet();
         data.setClassIndex(data.numAttributes() - 1);
 
+        //data = removeUseless(data);
         data = pkiDiscretize(data);
-        data = removeUseless(data);
 
         File file = new File(outputSetFile);
         Files.deleteIfExists(file.toPath());
